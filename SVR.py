@@ -9,7 +9,9 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.svm import SVR
 from sklearn.model_selection import GridSearchCV
 import ta
+import time
 
+start_time = time.time()
 
 files = ["CPI.csv", "FEDFUNDS.csv", "SavingsRate.csv", "UNRATE.csv"]
 
@@ -76,9 +78,9 @@ print(scaled_y_data)
 
 x_train = []
 y_train = []
-for i in range(len(x_data)-30):
-    x_train.append(scaled_x_data[i:i+30])
-    y_train.append(scaled_y_data[i+30])
+for i in range(len(x_data)-2):
+    x_train.append(scaled_x_data[i:i+2])
+    y_train.append(scaled_y_data[i+2])
 print(x_train)
 print(y_train)
 #extra_test_pred = scaled_x_data[-30:]
@@ -132,6 +134,7 @@ actual_values = np.array(actual_values)
 print(actual_values)
 print(predictions)
 
+
 #mudeli mõõdikud
 mse = np.mean((predictions - actual_values) ** 2)
 print("MSE: "+ str(mse))
@@ -141,6 +144,10 @@ mae = np.mean(np.abs(predictions - actual_values))
 print("MAE: "+ str(mae))
 mape = np.mean(np.abs((actual_values - predictions) / actual_values)) * 100
 print("MAPE: "+ str(mape))
+
+end_time = time.time()
+all_time = end_time - start_time
+print(all_time)
 
 plt.plot(actual_values, label="Actual")
 plt.plot(predictions, label="Predictions")

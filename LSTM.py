@@ -5,14 +5,14 @@ import yfinance as yf
 import tensorflow as tf
 import math
 from sklearn.preprocessing import MinMaxScaler
-
+import time
 from keras_tuner.tuners import RandomSearch
 from keras_tuner.engine.hyperparameters import HyperParameters as hp
+start_time = time.time()
 
+files = ["CPI.csv", "FEDFUNDS.csv", "SavingsRate.csv", "UNRATE.csv", "CURRCIR.csv"]
 
-files = ["CPI.csv", "FEDFUNDS.csv", "SavingsRate.csv", "UNRATE.csv"]
-
-df_stock = yf.Ticker("NCN1T.TL").history(start="1880-04-04", end="2020-08-04", interval="1mo").reset_index()[
+df_stock = yf.Ticker("^GSPC").history(start="1960-03-03", end="2023-06-01", interval="1d").reset_index()[
     ["Date", "Open", "Close", "High", "Low", "Volume"]]
 
 dates_for_files = []
@@ -117,7 +117,7 @@ tuner = RandomSearch(
     project_name='C:/Users/Kasutaja/PycharmProjects/HyperparameetridLogs/')
 
 
-tuner.search(x_train, y_train, epochs=100, validation_split=0.1, batch_size=128)
+tuner.search(x_train, y_train, epochs=70, validation_split=0.1, batch_size=128)
 
 #get best hyperparameters
 
@@ -127,7 +127,7 @@ best_hp = tuner.get_best_hyperparameters(num_trials=1)[0]
 best_model = tuner.hypermodel.build(best_hp)
 
 
-print(best_model.summary())
+#print(best_model.summary())
 
 predictions = []
 actual_values = []
@@ -138,20 +138,20 @@ for i in range(len(x_train)-40):
     x_train_i = x_train[i:i+40]
     y_train_i = y_train[i:i+40]
 
-    print(x_train_i.shape)
-    print(y_train_i.shape)
+    #print(x_train_i.shape)
+    #print(y_train_i.shape)
     #preparing testing data
-    x_test = x_train[i+40].reshape(1, 2, 9)
+    x_test = x_train[i+40].reshape(1, 2, 10)
 
 
-    best_model.fit(x_train_i, y_train_i, epochs=100)
+    best_model.fit(x_train_i, y_train_i, epochs=70)
     print(i)
     pred = best_model.predict(x_test)
     pred = pred.reshape((-1, 1))
     pred = scaler.inverse_transform(pred)
     predictions.append(pred[0][0]) #0 ja 0 sest prediction on array ja niimoodi saame katte ennustuse
     actual_values.append(df_stock["Close"][i+40])
-    print(x_test)
+    #print(x_test)
 
 
 predictions = np.array(predictions)
@@ -168,6 +168,9 @@ print("Root Mean Squared Error (RMSE):", rmse)
 print("Mean Absolute Error (MAE):", mae)
 print("Mean Absolute Percentage Error (MAPE):", mape)
 
+end_time = time.time()
+all_time = end_time - start_time
+print(all_time)
 #predictions = np.array(predictions)
 #actual_values = np.array(actual_values)
 # Plot the predictions and actual values

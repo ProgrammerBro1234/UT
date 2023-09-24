@@ -3,10 +3,13 @@ from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
+import time
+
+start_time = time.time()
 
 files = ["CPI.csv", "FEDFUNDS.csv", "SavingsRate.csv", "UNRATE.csv"]
 
-df_stock = yf.Ticker("NCN1T.TL").history(start="1880-07-07", end="2023-08-04").reset_index()[["Date", "Open", "Close", "High", "Low", "Volume"]]
+df_stock = yf.Ticker("NCN1T.TL").history(start="2020-03-03", end="2023-06-01", interval="1d").reset_index()[["Date", "Open", "Close", "High", "Low", "Volume"]]
 
 dates_for_files = []
 for i in df_stock["Date"]:
@@ -58,8 +61,8 @@ x_train, y_train = np.array(x_train), np.array(y_train)
 x_train = x_train.reshape((x_train.shape[0], x_train.shape[1]*x_train.shape[2]))
 
 #positional encoding
+encoding_array = x_train
 for pos in range(x_train.shape[0]):
-    encoding_array = x_train
     for i in range(0, x_train.shape[1], 2):
         funk = pos / np.power(10000, i / x_train.shape[1])
         encoding_array[pos, i] = np.sin(funk)
@@ -136,6 +139,10 @@ mae = np.mean(np.abs(predictions_for_calc - actual_values_for_calc))
 print("MAE: "+ str(mae))
 mape = np.mean(np.abs((actual_values_for_calc - predictions_for_calc) / actual_values_for_calc)) * 100
 print("MAPE: "+ str(mape))
+
+end_time = time.time()
+all_time = end_time - start_time
+print(all_time)
 
 predictions = np.array(predictions)
 actual_values = np.array(actual_values)
