@@ -170,7 +170,7 @@ print("Mean Absolute Percentage Error (MAPE):", mape)
 
 end_time = time.time()
 all_time = end_time - start_time
-print(all_time)
+print("Programmi jooksmise aeg: " + str(all_time))
 #predictions = np.array(predictions)
 #actual_values = np.array(actual_values)
 # Plot the predictions and actual values

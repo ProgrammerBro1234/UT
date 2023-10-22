@@ -9,7 +9,7 @@ start_time = time.time()
 
 files = ["CPI.csv", "FEDFUNDS.csv", "SavingsRate.csv", "UNRATE.csv"]
 
-df_stock = yf.Ticker("NCN1T.TL").history(start="2020-03-03", end="2023-06-01", interval="1d").reset_index()[["Date", "Open", "Close", "High", "Low", "Volume"]]
+df_stock = yf.Ticker("3333.HK").history(start="2020-03-03", end="2023-06-01", interval="1d").reset_index()[["Date", "Open", "Close", "High", "Low", "Volume"]]
 
 dates_for_files = []
 for i in df_stock["Date"]:

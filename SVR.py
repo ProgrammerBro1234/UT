@@ -147,7 +147,7 @@ print("MAPE: "+ str(mape))
 
 end_time = time.time()
 all_time = end_time - start_time
-print(all_time)
+print("Programmi jooksmise aeg: " + str(all_time))
 
 plt.plot(actual_values, label="Actual")
 plt.plot(predictions, label="Predictions")
