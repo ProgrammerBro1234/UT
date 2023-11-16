@@ -10,7 +10,7 @@ from keras_tuner.tuners import RandomSearch
 from keras_tuner.engine.hyperparameters import HyperParameters as hp
 start_time = time.time()
 
-files = ["CPI.csv", "FEDFUNDS.csv", "SavingsRate.csv", "UNRATE.csv", "CURRCIR.csv"]
+files = ["CPI.csv", "FEDFUNDS.csv", "SavingsRate.csv", "UNRATE.csv", "CURRCIR.csv","IRLTCT01USM156N.csv","DGS10.csv"]
 
 df_stock = yf.Ticker("^GSPC").history(start="1950-01-01", end="2023-01-01", interval="1mo").reset_index()[
     ["Date", "Open", "Close", "High", "Low", "Volume"]]
