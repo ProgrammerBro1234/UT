@@ -12,8 +12,63 @@ start_time = time.time()
 
 files = ["CPI.csv", "FEDFUNDS.csv", "SavingsRate.csv", "UNRATE.csv", "CURRCIR.csv"]
 
-df_stock = yf.Ticker("^GSPC").history(start="1960-03-03", end="2023-06-01", interval="1d").reset_index()[
+df_stock = yf.Ticker("^GSPC").history(start="1950-01-01", end="2023-01-01", interval="1mo").reset_index()[
     ["Date", "Open", "Close", "High", "Low", "Volume"]]
+
+
+
+
+
+
+
+        #df_stock = df_stock.drop(i, axis=1)
+
+"""
+f = open("FEDFUNDS.csv", "r")
+print(f.readline())
+
+lines = []
+for i in f.readlines():
+    print(i)
+    list1 = i.split(",")
+    print(list1)
+    list1[1] = ",-"+list1[1]
+    lines.append(list1[0]+list1[1])
+print(lines)
+f = open("FEDFUNDS.csv", "w")
+f.writelines(lines)
+f.close()
+
+f = open("UNRATE.csv", "r")
+print(f.readline())
+
+lines = []
+for i in f.readlines():
+    print(i)
+    list1 = i.split(",")
+    print(list1)
+    list1[1] = ",-"+list1[1]
+    lines.append(list1[0]+list1[1])
+print(lines)
+f = open("UNRATE.csv", "w")
+f.writelines(lines)
+f.close()
+
+f = open("SavingsRate.csv", "r")
+print(f.readline())
+
+lines = []
+for i in f.readlines():
+    print(i)
+    list1 = i.split(",")
+    print(list1)
+    list1[1] = ",-"+list1[1]
+    lines.append(list1[0]+list1[1])
+print(lines)
+f = open("SavingsRate.csv", "w")
+f.writelines(lines)
+f.close()
+"""
 
 dates_for_files = []
 for i in df_stock["Date"]:
@@ -41,16 +96,42 @@ for file in files:
     for i in dates_for_files:
         final_value_list.append(data_dict[i])
     df_stock[file] = final_value_list
-print(df_stock)
+#print(df_stock)
 """
 df_stock = df_stock.drop("SavingsRate.csv", axis=1)
 df_stock = df_stock.drop("UNRATE.csv", axis=1)
 df_stock = df_stock.drop("CPI.csv", axis=1)
 df_stock = df_stock.drop("FEDFUNDS.csv", axis=1)"""
-print(df_stock)
+#print(df_stock)
 df_stock = df_stock.drop("Date", axis=1)
+#Correlation filter
+for i in files:
+    if int(df_stock[i].corr(df_stock["Close"])) < 0.5:
+        f = open(i, "r")
+        f.readline()
+        lines = []
+        for a in f.readlines():
+            list1 = a.split(",")
+            list1[1] = ",-"+list1[1]
+            lines.append(list1[0]+list1[1])
+        f = open(i, "w")
+        f.writelines(lines)
+        f.close()
+        if int(df_stock[i].corr(df_stock["Close"])) < 0.5:
+            df_stock = df_stock.drop(i, axis=1)
 
 
+"""
+print(df_stock["Open"].corr(df_stock["Close"]))
+print(df_stock["Volume"].corr(df_stock["Close"]))
+print(df_stock["Low"].corr(df_stock["Close"]))
+print(df_stock["High"].corr(df_stock["Close"]))
+print(df_stock["CPI.csv"].corr(df_stock["Close"]))
+print(df_stock["FEDFUNDS.csv"].corr(df_stock["Close"]))
+print(df_stock["CURRCIR.csv"].corr(df_stock["Close"]))
+print(df_stock["SavingsRate.csv"].corr(df_stock["Close"]))
+print(df_stock["UNRATE.csv"].corr(df_stock["Close"]))
+"""
 
 x_data = df_stock.values
 y_data = df_stock["Close"].values
@@ -127,7 +208,7 @@ best_hp = tuner.get_best_hyperparameters(num_trials=1)[0]
 best_model = tuner.hypermodel.build(best_hp)
 
 
-#print(best_model.summary())
+print(best_model.summary())
 
 predictions = []
 actual_values = []
@@ -141,10 +222,10 @@ for i in range(len(x_train)-40):
     #print(x_train_i.shape)
     #print(y_train_i.shape)
     #preparing testing data
-    x_test = x_train[i+40].reshape(1, 2, 10)
+    x_test = x_train[i+40].reshape(1, 2, 5)
 
 
-    best_model.fit(x_train_i, y_train_i, epochs=70)
+    best_model.fit(x_train_i, y_train_i, epochs=100, verbose = 0)
     print(i)
     pred = best_model.predict(x_test)
     pred = pred.reshape((-1, 1))
