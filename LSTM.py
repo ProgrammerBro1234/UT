@@ -17,59 +17,6 @@ df_stock = yf.Ticker("^GSPC").history(start="1950-01-01", end="2023-01-01", inte
 
 
 
-
-
-
-
-        #df_stock = df_stock.drop(i, axis=1)
-
-"""
-f = open("FEDFUNDS.csv", "r")
-print(f.readline())
-
-lines = []
-for i in f.readlines():
-    print(i)
-    list1 = i.split(",")
-    print(list1)
-    list1[1] = ",-"+list1[1]
-    lines.append(list1[0]+list1[1])
-print(lines)
-f = open("FEDFUNDS.csv", "w")
-f.writelines(lines)
-f.close()
-
-f = open("UNRATE.csv", "r")
-print(f.readline())
-
-lines = []
-for i in f.readlines():
-    print(i)
-    list1 = i.split(",")
-    print(list1)
-    list1[1] = ",-"+list1[1]
-    lines.append(list1[0]+list1[1])
-print(lines)
-f = open("UNRATE.csv", "w")
-f.writelines(lines)
-f.close()
-
-f = open("SavingsRate.csv", "r")
-print(f.readline())
-
-lines = []
-for i in f.readlines():
-    print(i)
-    list1 = i.split(",")
-    print(list1)
-    list1[1] = ",-"+list1[1]
-    lines.append(list1[0]+list1[1])
-print(lines)
-f = open("SavingsRate.csv", "w")
-f.writelines(lines)
-f.close()
-"""
-
 dates_for_files = []
 for i in df_stock["Date"]:
     i = str(i)
@@ -97,15 +44,11 @@ for file in files:
         final_value_list.append(data_dict[i])
     df_stock[file] = final_value_list
 #print(df_stock)
-"""
-df_stock = df_stock.drop("SavingsRate.csv", axis=1)
-df_stock = df_stock.drop("UNRATE.csv", axis=1)
-df_stock = df_stock.drop("CPI.csv", axis=1)
-df_stock = df_stock.drop("FEDFUNDS.csv", axis=1)"""
+
 #print(df_stock)
 df_stock = df_stock.drop("Date", axis=1)
-#Correlation filter
-for i in files:
+#CORRELATION FILTER
+"""for i in files:
     if int(df_stock[i].corr(df_stock["Close"])) < 0.5:
         f = open(i, "r")
         f.readline()
@@ -119,24 +62,14 @@ for i in files:
         f.close()
         if int(df_stock[i].corr(df_stock["Close"])) < 0.5:
             df_stock = df_stock.drop(i, axis=1)
+"""
 
 
-"""
-print(df_stock["Open"].corr(df_stock["Close"]))
-print(df_stock["Volume"].corr(df_stock["Close"]))
-print(df_stock["Low"].corr(df_stock["Close"]))
-print(df_stock["High"].corr(df_stock["Close"]))
-print(df_stock["CPI.csv"].corr(df_stock["Close"]))
-print(df_stock["FEDFUNDS.csv"].corr(df_stock["Close"]))
-print(df_stock["CURRCIR.csv"].corr(df_stock["Close"]))
-print(df_stock["SavingsRate.csv"].corr(df_stock["Close"]))
-print(df_stock["UNRATE.csv"].corr(df_stock["Close"]))
-"""
 
 x_data = df_stock.values
 y_data = df_stock["Close"].values
 
-
+number_mis_on_eespool = x_data.shape[1]
 print(x_data.shape)
 print(y_data.shape)
 y_data = np.reshape(y_data, (-1, 1))
@@ -222,7 +155,7 @@ for i in range(len(x_train)-40):
     #print(x_train_i.shape)
     #print(y_train_i.shape)
     #preparing testing data
-    x_test = x_train[i+40].reshape(1, 2, 5)
+    x_test = x_train[i+40].reshape(1, 2, number_mis_on_eespool)
 
 
     best_model.fit(x_train_i, y_train_i, epochs=100, verbose = 0)
