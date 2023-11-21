@@ -15,7 +15,7 @@ start_time = time.time()
 
 files = ["CPI.csv", "FEDFUNDS.csv", "SavingsRate.csv", "UNRATE.csv"]
 
-df_stock = yf.Ticker("EBAY").history(start="2020-03-03", end="2023-06-01", interval="1d").reset_index()[
+df_stock = yf.Ticker("VTR").history(start="1995-01-01", end="2019-01-01", interval="1d").reset_index()[
     ["Date", "Open", "Close", "High", "Low", "Volume"]]
 
 dates_for_files = []
@@ -28,7 +28,7 @@ data_dict = {}
 dates = []
 value_list = []
 #loen failide andmed üldandmestikku
-"""
+
 for file in files:
     final_value_list = []
     df = pd.read_csv(file)
@@ -44,7 +44,7 @@ for file in files:
 
     for i in dates_for_files:
         final_value_list.append(data_dict[i])
-    df_stock[file] = final_value_list"""
+    df_stock[file] = final_value_list
 
 df_stock = df_stock.drop("Date", axis=1)
 
@@ -83,9 +83,6 @@ for i in range(len(x_data)-2):
     y_train.append(scaled_y_data[i+2])
 print(x_train)
 print(y_train)
-#extra_test_pred = scaled_x_data[-30:]
-#print(x_train)
-#print(y_train)
 
 x_train = np.array(x_train)
 y_train = np.array(y_train)
@@ -107,15 +104,12 @@ actual_values = []
 print(len(x_train))
 
 #walk forward validation
-for i in range(len(x_train)-30):
+for i in range(len(x_train)-40):
     #preparing training data
-    x_train_i = x_train[i:i+30]
-    y_train_i = y_train[i:i+30]
+    x_train_i = x_train[i:i+40]
+    y_train_i = y_train[i:i+40]
 
-    #print(x_train_i.shape)
-    #print(y_train_i.shape)
-    #preparing testing data
-    x_test = x_train[i+30]
+    x_test = x_train[i+40]
     x_test = x_test.reshape((1, -1))
 
     print(x_test.shape)
@@ -127,7 +121,7 @@ for i in range(len(x_train)-30):
     pred = pred.reshape((-1, 1))
     pred = scaler.inverse_transform(pred)
     predictions.append(pred[0][0]) #0 ja 0 sest prediction on array ja niimoodi saame katte ennustuse
-    actual_values.append(df_stock["Close"].iloc[i+30])
+    actual_values.append(df_stock["Close"].iloc[i+40])
 
 predictions = np.array(predictions)
 actual_values = np.array(actual_values)

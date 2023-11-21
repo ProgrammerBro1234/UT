@@ -10,9 +10,9 @@ from keras_tuner.tuners import RandomSearch
 from keras_tuner.engine.hyperparameters import HyperParameters as hp
 start_time = time.time()
 
-files = ["CPI.csv", "FEDFUNDS.csv", "SavingsRate.csv", "UNRATE.csv", "CURRCIR.csv","IRLTCT01USM156N.csv","DGS10.csv"]
+files = ["CPI.csv", "FEDFUNDS.csv", "SavingsRate.csv", "UNRATE.csv"]
 
-df_stock = yf.Ticker("^GSPC").history(start="1950-01-01", end="2023-01-01", interval="1mo").reset_index()[
+df_stock = yf.Ticker("^GSPC").history(start="1950-01-01", end="2023-01-01", interval="1d").reset_index()[
     ["Date", "Open", "Close", "High", "Low", "Volume"]]
 
 
@@ -47,24 +47,6 @@ for file in files:
 
 #print(df_stock)
 df_stock = df_stock.drop("Date", axis=1)
-#CORRELATION FILTER
-"""for i in files:
-    if int(df_stock[i].corr(df_stock["Close"])) < 0.5:
-        f = open(i, "r")
-        f.readline()
-        lines = []
-        for a in f.readlines():
-            list1 = a.split(",")
-            list1[1] = ",-"+list1[1]
-            lines.append(list1[0]+list1[1])
-        f = open(i, "w")
-        f.writelines(lines)
-        f.close()
-        if int(df_stock[i].corr(df_stock["Close"])) < 0.5:
-            df_stock = df_stock.drop(i, axis=1)
-"""
-
-
 
 x_data = df_stock.values
 y_data = df_stock["Close"].values
@@ -125,10 +107,10 @@ def model_builder(hp):
 tuner = RandomSearch(
     model_builder,
     objective="val_loss",
-    max_trials=1000,
+    max_trials=1005,
     executions_per_trial=1,
     directory='C:/Users/Kasutaja/PycharmProjects/Hyperparameetrid/',
-    project_name='C:/Users/Kasutaja/PycharmProjects/HyperparameetridLogs/')
+    project_name='C:/Users/Kasutaja/PycharmProjects/HyperparameetridLogs/JargmineAjasmm')
 
 
 tuner.search(x_train, y_train, epochs=70, validation_split=0.1, batch_size=128)
