@@ -107,10 +107,10 @@ def model_builder(hp):
 tuner = RandomSearch(
     model_builder,
     objective="val_loss",
-    max_trials=1005,
+    max_trials=999,
     executions_per_trial=1,
     directory='C:/Users/Kasutaja/PycharmProjects/Hyperparameetrid/',
-    project_name='C:/Users/Kasutaja/PycharmProjects/HyperparameetridLogs/JargmineAjasmm')
+    project_name='C:/Users/Kasutaja/PycharmProjects/HyperparameetridLogs/')
 
 
 tuner.search(x_train, y_train, epochs=70, validation_split=0.1, batch_size=128)
