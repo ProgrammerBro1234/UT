@@ -15,7 +15,7 @@ start_time = time.time()
 
 files = ["CPI.csv", "FEDFUNDS.csv", "SavingsRate.csv", "UNRATE.csv"]
 
-df_stock = yf.Ticker("VTR").history(start="1995-01-01", end="2019-01-01", interval="1d").reset_index()[
+df_stock = yf.Ticker("WMT").history(start="2023-01-01", end="2024-01-16", interval="1d").reset_index()[
     ["Date", "Open", "Close", "High", "Low", "Volume"]]
 
 dates_for_files = []
@@ -31,7 +31,7 @@ value_list = []
 
 for file in files:
     final_value_list = []
-    df = pd.read_csv(file)
+    df = pd.read_csv(file, error_bad_lines=False)
     temporary_dict = df.to_dict()
     for values in temporary_dict.values():
         for i in values.values():
@@ -45,7 +45,7 @@ for file in files:
     for i in dates_for_files:
         final_value_list.append(data_dict[i])
     df_stock[file] = final_value_list
-
+print(df_stock)
 df_stock = df_stock.drop("Date", axis=1)
 
 #lisan tehnilised indikaatorid andmestikku
@@ -81,8 +81,14 @@ y_train = []
 for i in range(len(x_data)-2):
     x_train.append(scaled_x_data[i:i+2])
     y_train.append(scaled_y_data[i+2])
-print(x_train)
-print(y_train)
+    print("Bruh")
+    print(scaled_x_data[i:i+2])
+print("ASKDLÖAHFSSGALAKSJHAKHFS")
+print(len(x_train))
+
+extra_test_pred = scaled_x_data[-2:].reshape((1, -1))
+print(extra_test_pred)
+
 
 x_train = np.array(x_train)
 y_train = np.array(y_train)
@@ -122,26 +128,38 @@ for i in range(len(x_train)-40):
     pred = scaler.inverse_transform(pred)
     predictions.append(pred[0][0]) #0 ja 0 sest prediction on array ja niimoodi saame katte ennustuse
     actual_values.append(df_stock["Close"].iloc[i+40])
+    print("ALERT: "+ str(df_stock["Close"].iloc[i+40]))
 
-predictions = np.array(predictions)
-actual_values = np.array(actual_values)
+predictions_for_calc = np.array(predictions)
+actual_values_for_calc = np.array(actual_values)
 print(actual_values)
 print(predictions)
 
-
-#mudeli mõõdikud
-mse = np.mean((predictions - actual_values) ** 2)
+mse = np.mean((predictions_for_calc - actual_values_for_calc) ** 2)
 print("MSE: "+ str(mse))
 rmse = np.sqrt(mse)
 print("RMSE: "+ str(rmse))
-mae = np.mean(np.abs(predictions - actual_values))
+mae = np.mean(np.abs(predictions_for_calc - actual_values_for_calc))
 print("MAE: "+ str(mae))
-mape = np.mean(np.abs((actual_values - predictions) / actual_values)) * 100
+mape = np.mean(np.abs((actual_values_for_calc - predictions_for_calc) / actual_values_for_calc)) * 100
 print("MAPE: "+ str(mape))
+
+#nr1 extra prediction
+extra_pred = best_model.predict(extra_test_pred)
+extra_prediction = extra_pred.reshape((-1, 1))
+extra_ennustus = scaler.inverse_transform(extra_prediction)
+predictions.append(extra_ennustus[0][0])
+print(extra_ennustus)
+
+muutus = (predictions[-1] - predictions[-2]) / predictions[-1] *100
+print("Muutus: ", muutus)
 
 end_time = time.time()
 all_time = end_time - start_time
 print("Programmi jooksmise aeg: " + str(all_time))
+
+predictions = np.array(predictions)
+actual_values = np.array(actual_values)
 
 plt.plot(actual_values, label="Actual")
 plt.plot(predictions, label="Predictions")

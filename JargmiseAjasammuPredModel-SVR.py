@@ -10,10 +10,9 @@ from sklearn.svm import SVR
 from sklearn.model_selection import GridSearchCV
 import ta
 
+files = ["CPI.csv", "FEDFUNDS.csv", "SavingsRate.csv", "UNRATE.csv"]
 
-files = ["CPI.csv", "FEDFUNDS.csv", "SavingsRate.csv", "UNRATE.csv", "CURRCIR.csv"]
-
-df_stock = yf.Ticker("KR").history(start="1880-04-04", end="2024-08-02", interval="1d").reset_index()[
+df_stock = yf.Ticker("KR").history(start="1995-01-01", end="2024-02-29", interval="1d").reset_index()[
     ["Date", "Open", "Close", "High", "Low", "Volume"]]
 
 dates_for_files = []
@@ -81,13 +80,15 @@ x_train = []
 y_train = []
 for i in range(len(x_data)-2):
     x_train.append(scaled_x_data[i:i+2])
+    print(scaled_x_data[i:i+2])
+    print(scaled_x_data[i+2])
     y_train.append(scaled_y_data[i+2])
-print(x_train)
-print(y_train)
-extra_test_pred = scaled_x_data[-2:].reshape((1, -1))
-print(extra_test_pred.shape)
 #print(x_train)
 #print(y_train)
+extra_test_pred = scaled_x_data[-2:].reshape((1, -1))
+print(extra_test_pred.shape)
+print(extra_test_pred)
+
 
 x_train = np.array(x_train)
 y_train = np.array(y_train)
@@ -147,7 +148,7 @@ extra_pred = best_model.predict(extra_test_pred)
 extra_prediction = extra_pred.reshape((-1, 1))
 extra_ennustus = scaler.inverse_transform(extra_prediction)
 predictions.append(extra_ennustus[0][0])
-print(extra_pred)
+print(extra_ennustus)
 
 #nr2 extra prediction
 
@@ -170,6 +171,10 @@ pred = pred.reshape((1, -1))
 extra_ennustus = scaler.inverse_transform(pred)
 predictions.append(extra_ennustus[0][0])
 """
+
+#muutus protsendites tabeli jaoks
+muutus = (predictions[-1] - predictions[-2]) / predictions[-1] *100
+print("Muutus: ", muutus)
 
 
 predictions = np.array(predictions)
